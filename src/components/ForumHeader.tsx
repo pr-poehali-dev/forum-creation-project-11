@@ -10,8 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 type UserRole = 'user' | 'moderator' | 'admin';
 
 interface ForumHeaderProps {
-  activeSection: 'news' | 'discussions' | 'chat' | 'contacts';
-  setActiveSection: (section: 'news' | 'discussions' | 'chat' | 'contacts') => void;
+  activeSection: 'news' | 'discussions' | 'chat' | 'messages' | 'shop' | 'quests' | 'contacts';
+  setActiveSection: (section: 'news' | 'discussions' | 'chat' | 'messages' | 'shop' | 'quests' | 'contacts') => void;
   isAuthenticated: boolean;
   userRole: UserRole;
   selectedBorder: { id: number; name: string; gradient: string; color: string };
@@ -19,6 +19,7 @@ interface ForumHeaderProps {
   handleAuth: (role?: UserRole) => void;
   achievements: Array<{ id: number; name: string; icon: string; unlocked: boolean; description: string }>;
   avatarBorders: Array<{ id: number; name: string; gradient: string; color: string }>;
+  userCoins: number;
 }
 
 export default function ForumHeader({
@@ -31,6 +32,7 @@ export default function ForumHeader({
   handleAuth,
   achievements,
   avatarBorders,
+  userCoins,
 }: ForumHeaderProps) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -62,42 +64,69 @@ export default function ForumHeader({
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center gap-2">
+          <nav className="hidden lg:flex items-center gap-1">
             <Button
               variant={activeSection === 'news' ? 'default' : 'ghost'}
               onClick={() => setActiveSection('news')}
-              className="gap-2"
+              size="sm"
             >
-              <Icon name="Newspaper" size={18} />
-              Новости
+              <Icon name="Newspaper" size={16} />
             </Button>
             <Button
               variant={activeSection === 'discussions' ? 'default' : 'ghost'}
               onClick={() => setActiveSection('discussions')}
-              className="gap-2"
+              size="sm"
             >
-              <Icon name="MessageCircle" size={18} />
-              Обсуждения
+              <Icon name="MessageCircle" size={16} />
             </Button>
             <Button
               variant={activeSection === 'chat' ? 'default' : 'ghost'}
               onClick={() => setActiveSection('chat')}
-              className="gap-2"
+              size="sm"
             >
-              <Icon name="MessagesSquare" size={18} />
-              Чат
+              <Icon name="MessagesSquare" size={16} />
             </Button>
+            {isAuthenticated && (
+              <>
+                <Button
+                  variant={activeSection === 'messages' ? 'default' : 'ghost'}
+                  onClick={() => setActiveSection('messages')}
+                  size="sm"
+                >
+                  <Icon name="Mail" size={16} />
+                </Button>
+                <Button
+                  variant={activeSection === 'shop' ? 'default' : 'ghost'}
+                  onClick={() => setActiveSection('shop')}
+                  size="sm"
+                >
+                  <Icon name="ShoppingBag" size={16} />
+                </Button>
+                <Button
+                  variant={activeSection === 'quests' ? 'default' : 'ghost'}
+                  onClick={() => setActiveSection('quests')}
+                  size="sm"
+                >
+                  <Icon name="Target" size={16} />
+                </Button>
+              </>
+            )}
             <Button
               variant={activeSection === 'contacts' ? 'default' : 'ghost'}
               onClick={() => setActiveSection('contacts')}
-              className="gap-2"
+              size="sm"
             >
-              <Icon name="Mail" size={18} />
-              Контакты
+              <Icon name="Phone" size={16} />
             </Button>
           </nav>
 
           <div className="flex items-center gap-3">
+            {isAuthenticated && (
+              <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/30">
+                <Icon name="Coins" size={20} className="text-amber-500" />
+                <span className="font-bold text-amber-500">{userCoins}</span>
+              </div>
+            )}
             {isAuthenticated ? (
               <>
                 {(userRole === 'admin' || userRole === 'moderator') && (

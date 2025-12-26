@@ -32,6 +32,8 @@ interface DiscussionsSectionProps {
     isPinned: boolean;
     isNews: boolean;
   }>;
+  userRole: 'user' | 'moderator' | 'admin';
+  onDeletePost: (postId: number) => void;
 }
 
 export default function DiscussionsSection({
@@ -40,6 +42,8 @@ export default function DiscussionsSection({
   setSelectedCategory,
   categories,
   filteredPosts,
+  userRole,
+  onDeletePost,
 }: DiscussionsSectionProps) {
   return (
     <div className="grid lg:grid-cols-4 gap-6">
@@ -159,7 +163,7 @@ export default function DiscussionsSection({
             {filteredPosts.map((post) => (
               <Card
                 key={post.id}
-                className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer animate-fade-in"
+                className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer animate-fade-in group"
               >
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">
@@ -182,6 +186,19 @@ export default function DiscussionsSection({
                             {post.author} • {post.timestamp}
                           </p>
                         </div>
+                        {(userRole === 'moderator' || userRole === 'admin') && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeletePost(post.id);
+                            }}
+                          >
+                            <Icon name="Trash2" size={16} className="text-destructive" />
+                          </Button>
+                        )}
                       </div>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">

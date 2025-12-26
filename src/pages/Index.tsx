@@ -5,6 +5,11 @@ import ForumHeader from '@/components/ForumHeader';
 import NewsSection from '@/components/NewsSection';
 import DiscussionsSection from '@/components/DiscussionsSection';
 import ChatSection from '@/components/ChatSection';
+import PrivateMessagesSection from '@/components/PrivateMessagesSection';
+import ShopSection from '@/components/ShopSection';
+import QuestsSection from '@/components/QuestsSection';
+import { Quest } from '@/types/forum';
+import { mockQuests } from '@/data/mockData';
 
 const categories = [
   { id: 'bloggers', name: 'Блогеры', icon: 'Video', color: 'from-pink-500 to-rose-500', posts: 234 },
@@ -102,7 +107,7 @@ const mockChatMessages = [
 type UserRole = 'user' | 'moderator' | 'admin';
 
 function Index() {
-  const [activeSection, setActiveSection] = useState<'news' | 'discussions' | 'chat' | 'contacts'>('news');
+  const [activeSection, setActiveSection] = useState<'news' | 'discussions' | 'chat' | 'messages' | 'shop' | 'quests' | 'contacts'>('news');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState<UserRole>('user');
@@ -110,6 +115,9 @@ function Index() {
   const [newMessage, setNewMessage] = useState('');
   const [selectedBorder, setSelectedBorder] = useState(avatarBorders[0]);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [userCoins, setUserCoins] = useState(500);
+  const [quests, setQuests] = useState<Quest[]>(mockQuests);
+  const [posts, setPosts] = useState(mockPosts);
 
   const handleAuth = (role: UserRole = 'user') => {
     setIsAuthenticated(true);
@@ -131,9 +139,32 @@ function Index() {
     }
   };
 
+  const handleDeleteMessage = (messageId: number) => {
+    if (userRole === 'moderator' || userRole === 'admin') {
+      setChatMessages(chatMessages.filter(msg => msg.id !== messageId));
+    }
+  };
+
+  const handleDeletePost = (postId: number) => {
+    if (userRole === 'moderator' || userRole === 'admin') {
+      setPosts(posts.filter(post => post.id !== postId));
+    }
+  };
+
+  const handlePurchase = (price: number) => {
+    if (userCoins >= price) {
+      setUserCoins(userCoins - price);
+    }
+  };
+
+  const handleCompleteQuest = (questId: string, reward: number) => {
+    setQuests(quests.map(q => q.id === questId ? { ...q, completed: true } : q));
+    setUserCoins(userCoins + reward);
+  };
+
   const filteredPosts = selectedCategory
-    ? mockPosts.filter(post => post.category === selectedCategory)
-    : mockPosts;
+    ? posts.filter(post => post.category === selectedCategory)
+    : posts;
 
   return (
     <div className="min-h-screen bg-background">
@@ -147,6 +178,7 @@ function Index() {
         handleAuth={handleAuth}
         achievements={achievements}
         avatarBorders={avatarBorders}
+        userCoins={userCoins}
       />
 
       <main className="container mx-auto px-4 py-8">
@@ -161,6 +193,8 @@ function Index() {
             setSelectedCategory={setSelectedCategory}
             categories={categories}
             filteredPosts={filteredPosts}
+            userRole={userRole}
+            onDeletePost={handleDeletePost}
           />
         )}
 
@@ -172,12 +206,26 @@ function Index() {
             setNewMessage={setNewMessage}
             handleSendMessage={handleSendMessage}
             setIsAuthOpen={setIsAuthOpen}
+            userRole={userRole}
+            onDeleteMessage={handleDeleteMessage}
           />
+        )}
+
+        {activeSection === 'messages' && isAuthenticated && (
+          <PrivateMessagesSection currentUserId="current-user" />
+        )}
+
+        {activeSection === 'shop' && isAuthenticated && (
+          <ShopSection userCoins={userCoins} onPurchase={handlePurchase} />
+        )}
+
+        {activeSection === 'quests' && isAuthenticated && (
+          <QuestsSection quests={quests} onCompleteQuest={handleCompleteQuest} />
         )}
 
         {activeSection === 'contacts' && (
           <div className="max-w-4xl mx-auto">
-            <Card className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border-blue-500/30">
+            <Card className="bg-gradient-to-br from-violet-500/10 via-purple-500/10 to-fuchsia-500/10 border-violet-500/20">
               <CardHeader>
                 <CardTitle className="text-3xl flex items-center gap-3">
                   <Icon name="Mail" size={32} />

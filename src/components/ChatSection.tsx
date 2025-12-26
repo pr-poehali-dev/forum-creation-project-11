@@ -19,6 +19,8 @@ interface ChatSectionProps {
   setNewMessage: (message: string) => void;
   handleSendMessage: () => void;
   setIsAuthOpen: (open: boolean) => void;
+  userRole: 'user' | 'moderator' | 'admin';
+  onDeleteMessage: (messageId: number) => void;
 }
 
 export default function ChatSection({
@@ -28,6 +30,8 @@ export default function ChatSection({
   setNewMessage,
   handleSendMessage,
   setIsAuthOpen,
+  userRole,
+  onDeleteMessage,
 }: ChatSectionProps) {
   const chatScrollRef = useRef<HTMLDivElement>(null);
 
@@ -53,7 +57,7 @@ export default function ChatSection({
               <ScrollArea className="h-[400px] rounded-lg border border-border bg-card/50 p-4" ref={chatScrollRef}>
                 <div className="space-y-4">
                   {chatMessages.map((msg) => (
-                    <div key={msg.id} className="flex items-start gap-3 animate-fade-in">
+                    <div key={msg.id} className="flex items-start gap-3 animate-fade-in group">
                       <Avatar className="w-10 h-10">
                         <AvatarImage src={msg.avatar} />
                         <AvatarFallback>{msg.author[0]}</AvatarFallback>
@@ -62,6 +66,16 @@ export default function ChatSection({
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-semibold text-sm">{msg.author}</span>
                           <span className="text-xs text-muted-foreground">{msg.timestamp}</span>
+                          {(userRole === 'moderator' || userRole === 'admin') && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 px-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => onDeleteMessage(msg.id)}
+                            >
+                              <Icon name="Trash2" size={14} className="text-destructive" />
+                            </Button>
+                          )}
                         </div>
                         <p className="text-sm bg-muted px-3 py-2 rounded-lg inline-block">
                           {msg.text}
