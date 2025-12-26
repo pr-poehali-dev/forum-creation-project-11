@@ -58,9 +58,7 @@ export default function ForumHeader({
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
                 <Icon name="MessageSquare" size={24} className="text-white" />
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                ForumHub
-              </h1>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">NekmiForum</h1>
             </div>
           </div>
 
