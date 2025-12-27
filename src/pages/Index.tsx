@@ -238,7 +238,7 @@ function Index() {
                   <div className="p-4 rounded-lg bg-card border border-border">
                     <Icon name="Mail" size={24} className="mb-2 text-primary" />
                     <h4 className="font-semibold mb-1">Email</h4>
-                    <p className="text-sm text-muted-foreground">support@forumhub.ru</p>
+                    <p className="text-sm text-muted-foreground">казах уебан</p>
                   </div>
                   <div className="p-4 rounded-lg bg-card border border-border">
                     <Icon name="MessageCircle" size={24} className="mb-2 text-primary" />
